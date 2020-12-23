@@ -1,0 +1,15 @@
+[package]
+name = "vanilla"
+version = "0.13.0"
+authors = ["gregkapka <greg@oraclize.it>"]
+
+[dependencies]
+log = "0.4.8"
+docopt = "1.1.0"
+rocksdb = "0.13.0"
+simplelog = "0.7.3"
+serde_derive = "1.0.101"
+serde = { version = "1", features = ["derive"] }
+# Be careful: setting a different core path would break compatibility
+# with the pnode-network-installer setup
+ptokens_core = { path = "../ptokens-core", features = ["debug"], version = "^4.1.0"}

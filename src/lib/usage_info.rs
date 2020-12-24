@@ -1,4 +1,4 @@
-pub static USAGE_INFO: &'static str = "
+pub static USAGE_INFO: &str = "
 ❍ Provable Vanilla pBTC Enclave ❍
 
     Copyright Provable 2020

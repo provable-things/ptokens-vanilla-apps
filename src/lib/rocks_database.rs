@@ -1,24 +1,10 @@
-use std::{
-    cell::RefCell,
-    collections::HashMap,
-};
-use rocksdb::{
-    DB,
-    WriteBatch,
-};
-use crate::{
+use crate::lib::{
     constants::DATABASE_PATH,
-    types::{
-        Result,
-        DataSensitivity,
-    },
+    types::{DataSensitivity, Result},
 };
-use ptokens_core::{
-    Bytes,
-    DatabaseInterface,
-    Result as PTokensResult,
-    AppError as PTokensCoreError,
-};
+use ptokens_core::{AppError as PTokensCoreError, Bytes, DatabaseInterface, Result as PTokensResult};
+use rocksdb::{WriteBatch, DB};
+use std::{cell::RefCell, collections::HashMap};
 
 pub struct Database {
     pub rocks_db: rocksdb::DB,
@@ -51,9 +37,9 @@ impl DatabaseInterface for Database {
             .borrow()
             .iter()
             .map(|db_op| match db_op {
-                 DbOp::Delete(key) => batch.delete(key),
-                 DbOp::Put(key, value) => batch.put(key, value),
-             })
+                DbOp::Delete(key) => batch.delete(key),
+                DbOp::Put(key, value) => batch.put(key, value),
+            })
             .for_each(drop);
         trace!("✔ Batch writing to DB...");
         match self.rocks_db.write(batch) {
@@ -64,7 +50,7 @@ impl DatabaseInterface for Database {
             Err(e) => {
                 trace!("✘ Error batch writing to DB: {}", &e);
                 Err(PTokensCoreError::Custom(e.to_string()))
-            }
+            },
         }
     }
 
@@ -78,14 +64,14 @@ impl DatabaseInterface for Database {
         self.hashmap.borrow_mut().insert(key.clone(), value.clone());
         trace!("✔ Checking if key is in delete list... ");
         match self.keys_to_delete.borrow().contains(&key) {
-                true => {
-                    trace!("✔ Removing key from delete list... ");
-                    self.hashmap.borrow_mut().remove(&key);
-                }
-                false => {
-                    trace!("✔ Key not in delete list, nothing to remove.");
-                }
-            };
+            true => {
+                trace!("✔ Removing key from delete list... ");
+                self.hashmap.borrow_mut().remove(&key);
+            },
+            false => {
+                trace!("✔ Key not in delete list, nothing to remove.");
+            },
+        };
         self.batch_db_ops.borrow_mut().push(DbOp::Put(key, value));
         Ok(())
     }
@@ -105,14 +91,14 @@ impl DatabaseInterface for Database {
             true => {
                 trace!("✔ Key already in delete list ∴ 'not found'!");
                 Err(PTokensCoreError::Custom(not_in_db_error))
-            }
+            },
             false => {
                 trace!("✔ Checking hashmap for key...");
                 match self.hashmap.borrow().get(&key) {
                     Some(value) => {
                         trace!("✔ Key found in hashmap!");
                         Ok(value.to_vec())
-                    }
+                    },
                     None => {
                         trace!("✘ Key NOT in hashmap!");
                         trace!("✔ Looking in underlying DB...");
@@ -120,18 +106,13 @@ impl DatabaseInterface for Database {
                             Ok(Some(value)) => {
                                 trace!("✔ Key found in DB!");
                                 Ok(value.to_vec())
-                            }
+                            },
                             Err(e) => Err(PTokensCoreError::Custom(e.to_string())),
-                            Ok(None) => Err(PTokensCoreError::Custom(not_in_db_error))
+                            Ok(None) => Err(PTokensCoreError::Custom(not_in_db_error)),
                         }
-
-                    }
+                    },
                 }
-            }
+            },
         }
     }
-}
-
-pub fn get_database() -> Result<Database> {
-    Database::open()
 }

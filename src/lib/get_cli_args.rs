@@ -1,13 +1,6 @@
+use crate::lib::{errors::AppError, types::Result, usage_info::USAGE_INFO};
 use docopt::Docopt;
-use std::{
-    path::Path,
-    fs::read_to_string,
-};
-use crate::{
-    types::Result,
-    errors::AppError,
-    usage_info::USAGE_INFO,
-};
+use std::{fs::read_to_string, path::Path};
 
 #[allow(non_snake_case)]
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -78,11 +71,10 @@ impl CliArgs {
 }
 
 pub fn parse_cli_args() -> Result<CliArgs> {
-    match Docopt::new(USAGE_INFO)
-        .and_then(|d| d.deserialize()) {
-            Ok(cli_args) => Ok(cli_args),
-            Err(e) => Err(AppError::Custom(e.to_string()))
-        }
+    match Docopt::new(USAGE_INFO).and_then(|d| d.deserialize()) {
+        Ok(cli_args) => Ok(cli_args),
+        Err(e) => Err(AppError::Custom(e.to_string())),
+    }
 }
 
 pub fn maybe_read_block_json_from_file(cli_args: CliArgs) -> Result<CliArgs> {
@@ -90,38 +82,45 @@ pub fn maybe_read_block_json_from_file(cli_args: CliArgs) -> Result<CliArgs> {
         true => {
             info!("✔ File exists @ path: {}, reading file...", cli_args.flag_file);
             match cli_args {
-                CliArgs {cmd_debugAddUtxos: true, ..} => {
+                CliArgs {
+                    cmd_debugAddUtxos: true,
+                    ..
+                } => {
                     info!("✔ Updating UTXOS in CLI args...");
-                    cli_args.clone().update_utxos_json_in_cli_args(read_to_string(cli_args.flag_file)?)
-                }
+                    cli_args
+                        .clone()
+                        .update_utxos_json_in_cli_args(read_to_string(cli_args.flag_file)?)
+                },
                 _ => {
                     info!("✔ Updating block in CLI args...");
-                    cli_args.clone().update_block_in_cli_args(read_to_string(cli_args.flag_file)?)
+                    cli_args
+                        .clone()
+                        .update_block_in_cli_args(read_to_string(cli_args.flag_file)?)
                 },
             }
-        }
+        },
         false => {
             info!("✔ No file exists @ path: {}, not reading file...", cli_args.flag_file);
             Ok(cli_args)
-        }
+        },
     }
 }
 
-pub fn set_path_from_bytecode_flag(
-    cli_args: CliArgs
-) -> Result<CliArgs> {
+pub fn set_path_from_bytecode_flag(cli_args: CliArgs) -> Result<CliArgs> {
     match Path::new(&cli_args.flag_bytecode).exists() {
         true => {
             info!("✔ File exists @ path: {}, reading file...", cli_args.flag_bytecode);
             cli_args.clone().update_path_in_cli_args(cli_args.flag_bytecode)
-        }
+        },
         false => {
             info!("✔ No file exists @ path: {}", cli_args.flag_bytecode);
             Ok(cli_args)
-        }
+        },
     }
 }
 
 pub fn get_cli_args() -> Result<CliArgs> {
-    parse_cli_args().and_then(maybe_read_block_json_from_file).and_then(set_path_from_bytecode_flag)
+    parse_cli_args()
+        .and_then(maybe_read_block_json_from_file)
+        .and_then(set_path_from_bytecode_flag)
 }

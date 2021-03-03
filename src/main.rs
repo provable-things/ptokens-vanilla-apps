@@ -49,6 +49,7 @@ use crate::lib::{
     errors::AppError,
     get_cli_args::{get_cli_args, CliArgs},
     get_database::get_database,
+    get_versions::get_versions,
     initialize_logger::initialize_logger,
     usage_info::USAGE_INFO,
 };
@@ -140,11 +141,11 @@ fn main() -> Result<(), AppError> {
                 Ok(debug_get_key_from_db(get_database()?, &cli_args.arg_key)?)
             },
             CliArgs {
-                cmd_debugAddUtxoToDb: true,
+                cmd_debugMaybeAddUtxoToDb: true,
                 ..
             } => {
-                info!("✔ Maybe getting all UTXOs from the database...");
-                Ok(debug_maybe_add_utxo_to_db(get_database()?, &cli_args.arg_utxo)?)
+                info!("✔ Debug maybe adding UTXO to db...");
+                Ok(debug_maybe_add_utxo_to_db(get_database()?, &cli_args.arg_blockJson)?)
             },
             CliArgs {
                 cmd_debugAddUtxos: true,
@@ -268,6 +269,7 @@ fn main() -> Result<(), AppError> {
                     &cli_args.arg_address,
                 )?)
             },
+            CliArgs { flag_version: true, .. } => get_versions(),
             _ => Err(AppError::Custom(USAGE_INFO.to_string())),
         }) {
         Ok(json_string) => {

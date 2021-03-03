@@ -13,6 +13,7 @@ pub struct CliArgs {
     pub flag_file: String,
     pub flag_gasPrice: u64,
     pub flag_network: String, // NOTE: BTC network!
+    pub flag_version: bool,
     pub flag_difficulty: u64,
     pub flag_bytecode: String,
     pub flag_recipient: String,
@@ -21,7 +22,6 @@ pub struct CliArgs {
     pub arg_key: String,
     pub arg_txId: String,
     pub arg_path: String,
-    pub arg_utxo: String,
     pub arg_value: String,
     pub arg_numUtxos: usize,
     pub arg_message: String,
@@ -35,11 +35,11 @@ pub struct CliArgs {
     pub cmd_getLatestBlockNumbers: bool,
     pub cmd_debugAddUtxos: bool,
     pub cmd_debugRemoveUtxo: bool,
-    pub cmd_debugAddUtxoToDb: bool,
     pub cmd_debugGetAllUtxos: bool,
     pub cmd_debugGetAllDbKeys: bool,
     pub cmd_debugGetKeyFromDb: bool,
     pub cmd_debugClearAllUtxos: bool,
+    pub cmd_debugMaybeAddUtxoToDb: bool,
     pub cmd_debugConsolidateUtxos: bool,
     pub cmd_debugReprocessBtcBlock: bool,
     pub cmd_debugReprocessEthBlock: bool,
@@ -108,13 +108,10 @@ pub fn maybe_read_block_json_from_file(cli_args: CliArgs) -> Result<CliArgs> {
 
 pub fn set_path_from_bytecode_flag(cli_args: CliArgs) -> Result<CliArgs> {
     match Path::new(&cli_args.flag_bytecode).exists() {
+        false => Ok(cli_args),
         true => {
             info!("✔ File exists @ path: {}, reading file...", cli_args.flag_bytecode);
             cli_args.clone().update_path_in_cli_args(cli_args.flag_bytecode)
-        },
-        false => {
-            info!("✔ No file exists @ path: {}", cli_args.flag_bytecode);
-            Ok(cli_args)
         },
     }
 }

@@ -4,6 +4,7 @@ pub(crate) mod errors;
 pub(crate) mod file_logger;
 pub(crate) mod get_cli_args;
 pub(crate) mod get_database;
+pub(crate) mod get_versions;
 pub(crate) mod initialize_logger;
 #[cfg(feature = "json-rpc-db")]
 pub(crate) mod json_rpc_database;

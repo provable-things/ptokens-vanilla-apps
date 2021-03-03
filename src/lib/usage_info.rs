@@ -13,6 +13,7 @@ encryption and so is for use in development environments only.
 ❍ Usage ❍
 
 Usage:  vanilla [--help]
+        vanilla [--version]
         vanilla getEnclaveState
         vanilla getLatestBlockNumbers
         vanilla submitEthBlock (<blockJson> | --file=<path>)
@@ -22,7 +23,6 @@ Usage:  vanilla [--help]
         vanilla debugGetAllUtxos
         vanilla debugGetAllDbKeys
         vanilla debugClearAllUtxos
-        vanilla debugAddUtxoToDb <utxo>
         vanilla debugGetKeyFromDb <key>
         vanilla debugRemoveUtxo <txId> <vOut>
         vanilla debugErc777ChangePNetwork <address>
@@ -31,6 +31,7 @@ Usage:  vanilla [--help]
         vanilla debugAddUtxos (<utxosJson> | --file=<path>)
         vanilla debugConsolidateUtxos <numUtxos> [--fee=<uint>]
         vanilla debugErc777ProxyChangePNetworkByProxy <address>
+        vanilla debugMaybeAddUtxoToDb (<blockJson> | --file=<path>)
         vanilla debugReprocessBtcBlock (<blockJson> | --file=<path>)
         vanilla debugReprocessEthBlock (<blockJson> | --file=<path>)
         vanilla debugGetChildPaysForParentTx <txId> <vOut> [--fee=<uint>]
@@ -113,7 +114,7 @@ Commands:
 
     getLatestBlockNumbers               ❍ Returns the current lastest ETH & BTC block numbers seen by the enclave.
 
-    debugAddUtxoToDb                    ❍ Adds a UTXO to the UTXOs set
+    debugMaybeAddUtxoToDb               ❍ Reprocess a BTC block looking for any UTXOs to add to the core.
 
     debugReprocessBtcBlock              ❍ Submit BTC block submisson material for re-processing.
 
@@ -149,6 +150,8 @@ Commands:
 Options:
 
     --help                              ❍ Show this message.
+
+    --version                           ❍ Returns the core version as well as the application version.
 
     --file=<path>                       ❍ Path to file containg an ETH or BTC block JSON.
 

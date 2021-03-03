@@ -23,6 +23,10 @@ quick_error! {
             from()
             display("✘ Env var error: {}", err)
         }
+        SerdeJsonError(err: serde_json::Error) {
+            from()
+            display("✘ Serde-Json Error!\n✘ {}", err)
+        }
     }
 }
 

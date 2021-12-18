@@ -1,0 +1,31 @@
+[package]
+name = "lib"
+version = "1.1.1"
+authors = ["Greg Kapka <greg@oraclize.it>"]
+edition = "2018"
+
+[features]
+default = ["rocks-db", "file-logger"]
+rocks-db = ["rocksdb"]
+std-err-logger = ["stderrlog"]
+json-rpc-db = ["reqwest", "serde_json"]
+file-logger = ["simplelog", "lazy_static"]
+
+[dependencies]
+log = "0.4.14"
+hex = "0.4.3"
+docopt = "1.1.1"
+quick-error = "2.0.0"
+serde_derive = "1.0.125"
+rocksdb = { version = "0.15.0", optional = true }
+simplelog = { version = "0.10.0", optional = true }
+stderrlog = { version = "0.5.1", optional = true }
+lazy_static = { version = "1.4.0", optional = true }
+serde_json = { version = "1.0.64", optional = true }
+serde = { version = "1.0.125", features = ["derive"] }
+ptokens_core = { path = "../../ptokens-core", features = ["debug","non-validating"], version = ">=4.40.0" }
+reqwest = { version = "0.11.2", features = ["blocking", "json"], default-features = false, optional = true }
+
+[dev-dependencies]
+serial_test = "0.5.1"
+simple_logger = "1.11.0"

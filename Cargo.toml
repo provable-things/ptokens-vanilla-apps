@@ -1,25 +1,12 @@
-[package]
-name = "vanilla"
-version = "1.2.2"
-authors = ["gregkapka <greg@oraclize.it>"]
+[workspace]
+members = [
+    "lib",
+    "pbtc-on-eth",
+    "pbtc-on-eos",
+    "peos-on-eth",
+    "perc20-on-eos",
+    "perc20-on-evm",
+]
 
-[features]
-default = ["rocks-db", "file-logger"]
-rocks-db = ["rocksdb"]
-file-logger = ["simplelog"]
-std-err-logger = ["stderrlog"]
-json-rpc-db = ["reqwest", "serde_json"]
-
-[dependencies]
-log = "0.4.11"
-hex = "0.4.0"
-docopt = "1.1.0"
-quick-error = "2.0.0"
-serde_derive = "1.0.101"
-serde = { version = "1", features = ["derive"] }
-rocksdb = { version = "0.13.0", optional = true }
-simplelog = { version = "0.7.3", optional = true }
-stderrlog = { version = "0.5.0", optional = true }
-serde_json = { version = "1.0.40", optional = true }
-ptokens_core = { path = "../ptokens-core", features = ["debug"], version = ">=4.9.0"}
-reqwest = { version = "0.10", features = ["blocking", "json"], default-features = false, optional = true }
+[profile.release]
+overflow-checks = true

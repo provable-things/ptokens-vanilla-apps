@@ -1,18 +1,15 @@
-ARG os_version=1.46.0
-ARG core_version=latest
+ARG rust_version=1.53.0
 
-FROM provable/ptokens-core:$core_version
-FROM rust:$os_version-slim-buster
+FROM rust:$rust_version-slim-buster
 
-ENV HOME /home/provable
-ENV FOLDER_VANILLA $HOME/vanilla
+LABEL description="Helps building vanilla apps with the correct envinronment" \
+    version="1.0.0"
 
-WORKDIR $HOME
+ENV FOLDER_APPS /usr/src/myapp
+ENV FOLDER_CORE /usr/src/ptokens-core
 
-RUN groupadd provable && \
-    useradd -m -g provable provable && \
-    mkdir -p $FOLDER_VANILLA && \
-    chown -R provable:provable $FOLDER_VANILLA && \
+RUN mkdir -p $FOLDER_APPS && \
+    mkdir -p $FOLDER_CORE && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
         clang && \
@@ -20,14 +17,9 @@ RUN groupadd provable && \
     apt-get autoremove -y && \
     apt-get clean
 
-COPY --chown=provable:provable --from=0 /root/core $HOME/ptokens-core-private
-COPY --chown=provable:provable src $FOLDER_VANILLA/src
-COPY --chown=provable:provable Cargo.* $FOLDER_VANILLA/
+VOLUME $FOLDER_APPS
+VOLUME $FOLDER_CORE
 
-USER provable
+WORKDIR $FOLDER_APPS
 
-WORKDIR $FOLDER_VANILLA
-
-RUN cargo build --release
-
-ENTRYPOINT ["./target/release/vanilla"]
+ENTRYPOINT ["cargo"]
